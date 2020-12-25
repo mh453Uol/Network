@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Network.Core
 {
-    public class User : IdentityUser<Guid>
+    public class ApplicationUser : IdentityUser<Guid>
     {
         [Required]
         public string Firstname { get; set; }
@@ -16,7 +16,7 @@ namespace Network.Core
 
         public ICollection<Post> Posts { get; set; }
 
-        public User() : base()
+        public ApplicationUser() : base()
         {
 
         }

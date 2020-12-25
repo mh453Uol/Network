@@ -17,12 +17,12 @@ namespace Network.Core
         public Guid UserId { get; set; }
 
         [ForeignKey("UserId")]
-        public User User { get; set; }
+        public ApplicationUser User { get; set; }
 
         public Guid UpdatedByUserId { get; set; }
 
         [ForeignKey("UpdatedByUserId")]
-        public User UpdatedByUser { get; set; }
+        public ApplicationUser UpdatedByUser { get; set; }
 
         [Required]
         public DateTime CreatedOn { get; set; }

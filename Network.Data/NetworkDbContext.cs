@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Network.Data
 {
-    public class NetworkDbContext : IdentityDbContext<User, UserRole, Guid>
+    public class NetworkDbContext : IdentityDbContext<ApplicationUser, UserRole, Guid>
     {
         public DbSet<Post> Posts { get; set; }
 
