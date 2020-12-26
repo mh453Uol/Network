@@ -1,0 +1,12 @@
+﻿@model Post
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Create post</h5>
+        <form asp-controller="Post" asp-action="Create" method="post">
+            <div class="form-group">
+                <textarea class="form-control card-text" id="post" rows="3" asp-for="Content" placeholder="Whats on your mind..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Post</button>
+        </form>
+    </div>
+</div>

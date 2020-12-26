@@ -1,12 +1,26 @@
 ﻿@model Post
-<div class="card">
+
+<style>
+    .truncate-text {
+        max-height: 500px;
+        -webkit-box-orient: vertical;
+        display: -webkit-box;
+        -webkit-line-clamp: 50;
+        overflow: hidden;
+        white-space: pre-line;
+    }
+
+</style>
+
+<div class="card mt-2">
     <div class="card-body">
-        <h5 class="card-title">Create post</h5>
-        <form asp-controller="Post" asp-action="Create" method="post">
-            <div class="form-group">
-                <textarea class="form-control card-text" id="post" rows="3" asp-for="Content" placeholder="Whats on your mind..."></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary btn-block">Post</button>
-        </form>
+        <h5 class="card-title">
+            <a href="#">@Model.User.FullName</a>
+        </h5>
+        <p class="card-subtitle text-muted">@Model.UpdatedOn</p>
+
+        <div class="truncate-text">
+            @Model.Content
+        </div>
     </div>
 </div>

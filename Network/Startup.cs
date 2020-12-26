@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Network.Core;
 using Network.Data;
 using System;
@@ -29,10 +30,16 @@ namespace Network
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContextPool<NetworkDbContext>(options =>
-                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
+            {
+                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
+                options.UseLoggerFactory(LoggerFactory.Create(builder => { builder.AddConsole(); }));
+            });
 
-            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<NetworkDbContext>();
+            services.AddDefaultIdentity<ApplicationUser>(options =>
+            {
+                options.SignIn.RequireConfirmedAccount = true;
+
+            }).AddEntityFrameworkStores<NetworkDbContext>();
 
             services.AddRazorPages();
         }

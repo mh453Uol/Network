@@ -20,5 +20,12 @@ namespace Network.Core
         {
 
         }
+
+        public string FullName {
+            get
+            {
+                return $"{Firstname} {Surname}";
+            }
+        }
     }
 }
