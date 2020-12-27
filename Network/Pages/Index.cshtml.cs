@@ -10,6 +10,7 @@ using Network.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Network.Pages
@@ -44,7 +45,6 @@ namespace Network.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
-
             var posts = _dbContext.Posts.AsNoTracking()
                 .OrderByDescending(p => p.CreatedOn)
                 .Include(p => p.UpdatedByUser)

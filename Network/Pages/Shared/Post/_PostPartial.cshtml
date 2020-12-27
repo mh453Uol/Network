@@ -1,5 +1,6 @@
 ﻿@model Post
 
+@using System.Security.Claims
 <style>
     .truncate-text {
         max-height: 500px;
@@ -9,14 +10,30 @@
         overflow: hidden;
         white-space: pre-line;
     }
-
 </style>
 
+@{
+    var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+}
 <div class="card mt-2">
     <div class="card-body">
-        <h5 class="card-title">
-            <a href="#">@Model.User.FullName</a>
-        </h5>
+        <div class="d-flex justify-content-between align-self-center">
+            <h5>
+                <a href="#">@Model.User.FullName</a>
+            </h5>
+            @if (userId == Model.UserId)
+            {
+                <div class="btn-group">
+                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        More
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                        <a class="dropdown-item" asp-page="Posts/Edit" asp-route-id="@Model.Id">Edit</a>
+                        <a class="dropdown-item">Delete</a>
+                    </div>
+                </div>
+            }
+        </div>
         <p class="card-subtitle text-muted">@Model.UpdatedOn</p>
 
         <div class="truncate-text">

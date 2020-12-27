@@ -32,6 +32,18 @@
     </header>
     <div class="container">
         <main role="main" class="pb-3">
+
+
+            @if (ViewData.ContainsKey("Message"))
+            {
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    @ViewData["Message"]
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true"></span>
+                    </button>
+                </div>
+            }
+
             @RenderBody()
         </main>
     </div>

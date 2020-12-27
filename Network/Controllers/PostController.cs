@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Network.Core;
 using Network.Data;
@@ -7,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Network.Controllers
@@ -17,6 +20,7 @@ namespace Network.Controllers
         public string Content { get; set; }
     }
 
+    [Authorize]
     public class PostController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -57,6 +61,5 @@ namespace Network.Controllers
 
             return RedirectToPage("/Index");
         }
-
     }
 }

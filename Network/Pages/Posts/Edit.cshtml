@@ -1,0 +1,11 @@
+﻿@page "{id:guid}"
+@model Network.Pages.Posts.EditModel
+@{
+    ViewData["Title"] = "Edit Post";
+}
+
+<partial name="Post/_EditPostPartial" model="Model.Post" />
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
