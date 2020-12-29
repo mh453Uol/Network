@@ -2,11 +2,14 @@
 
 @using System.Security.Claims
 <style>
-    .truncate-text {
+    .truncate-text-container {
         max-height: 500px;
+    }
+
+    .truncate-text {
         -webkit-box-orient: vertical;
         display: -webkit-box;
-        -webkit-line-clamp: 50;
+        -webkit-line-clamp: 10;
         overflow: hidden;
         white-space: pre-line;
     }
@@ -36,8 +39,27 @@
         </div>
         <p class="card-subtitle text-muted">@Model.UpdatedOn</p>
 
-        <div class="truncate-text">
-            @Model.Content
+        <div class="truncate-text-container">
+            <p class="truncate-text card-text">@Model.Content</p>
         </div>
+
+        <div class="card-text mb-1">
+            @if (Model.LikeSet.Count > 1)
+            {
+                <span class="badge badge-pill badge-primary">@Model.Likes.Count Likes</span>
+            }
+        </div>
+
+        @if (Model.LikeSet.Contains(userId))
+        {
+            <button type="button" class="btn btn-primary btn-block">Unlike</button>
+        }
+        else
+        {
+            <button type="button" class="btn btn-light btn-block">Like</button>
+        }
+
     </div>
+
+
 </div>

@@ -41,6 +41,7 @@ namespace Network.Pages
             _logger = logger;
 
             PageIndex = 1;
+            Posts = new PaginatedList<Post>();
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -48,6 +49,7 @@ namespace Network.Pages
             var posts = _dbContext.Posts.AsNoTracking()
                 .OrderByDescending(p => p.CreatedOn)
                 .Include(p => p.UpdatedByUser)
+                .Include(p => p.Likes)
                 .Select(p => new Post
                 {
                     Id = p.Id,
@@ -59,9 +61,11 @@ namespace Network.Pages
                         Id = p.User.Id,
                         Firstname = p.User.Firstname,
                         Surname = p.User.Surname
-                    }
+                    },
+                    // Have to do .ToList().ToHashSet() rather than ToHashSet() due to this issue - https://github.com/dotnet/efcore/issues/20101
+                    LikeSet = p.Likes.Where(l => l.IsDeleted == false).Select(l => l.CreatedByUserId).ToList().ToHashSet()
                 });
-            
+
             PageIndex = Math.Max(1, PageIndex);
 
             Posts = await PaginatedList<Post>.CreateAsync(posts, PageIndex, PageSize);

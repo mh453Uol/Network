@@ -14,6 +14,8 @@ namespace Network.Core
         [MaxLength(1025)]
         public string Content { get; set; }
 
+        public ICollection<Like> Likes { get; set; }
+
         public Guid UserId { get; set; }
 
         [ForeignKey("UserId")]
@@ -28,6 +30,8 @@ namespace Network.Core
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
 
+        [NotMapped]
+        public HashSet<Guid> LikeSet { get; set; }
 
     }
 }

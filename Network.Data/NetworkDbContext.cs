@@ -11,6 +11,7 @@ namespace Network.Data
     public class NetworkDbContext : IdentityDbContext<ApplicationUser, UserRole, Guid>
     {
         public DbSet<Post> Posts { get; set; }
+        public DbSet<Like> Likes { get; set; }
 
         public NetworkDbContext(DbContextOptions<NetworkDbContext> options)
             : base(options)
