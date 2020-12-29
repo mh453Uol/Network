@@ -14,11 +14,9 @@ using System.Threading.Tasks;
 
 namespace Network.Controllers
 {
-    public class InputModel
-    {
-        [Required]
-        public string Content { get; set; }
-    }
+
+    // We need to have an MVC controller since when we display the new post form its a partial view. When making a HTTP POST to the razor page we need to have come from 
+    // a razor page. https://stackoverflow.com/questions/49868791/post-partial-view-form 
 
     [Authorize]
     public class PostController : Controller
@@ -45,7 +43,7 @@ namespace Network.Controllers
         {
             if (ModelState.IsValid)
             {
-                var userId = Guid.Parse(_userManager.GetUserId(User));
+                var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
                 await _dbContext.Posts.AddAsync(new Post()
                 {

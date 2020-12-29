@@ -50,16 +50,12 @@
             }
         </div>
 
-        @if (Model.LikeSet.Contains(userId))
-        {
-            <button type="button" class="btn btn-primary btn-block">Unlike</button>
+        @{
+            var liked = Model.LikeSet.Contains(userId);
+            var cssClass = liked ? "js-liked" : "js-not-liked";
+            var label = liked ? "Unlike" : "Like";
         }
-        else
-        {
-            <button type="button" class="btn btn-light btn-block">Like</button>
-        }
-
+     
+        <button type="button" class="btn btn-light btn-block @cssClass" data-post-id="@Model.Id">@label</button>
     </div>
-
-
 </div>

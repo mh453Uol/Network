@@ -45,4 +45,31 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const notLiked = document.querySelectorAll(".js-not-liked");
+            const liked = document.querySelectorAll(".js-liked");
+
+            notLiked.forEach(button => button.addEventListener("click", like));
+            liked.forEach(button => button.addEventListener("click", unlike));
+
+            function getPostIdAttribute(e) {
+                return e.target.dataset.postId;
+            }
+
+            function like(e) {
+                const postId = getPostIdAttribute(e);
+
+                console.log(postId);
+            }
+
+            function unlike() {
+                const postId = getPostIdAttribute(e);
+
+                console.log(postId);
+            }
+
+        })
+    </script>
 }
