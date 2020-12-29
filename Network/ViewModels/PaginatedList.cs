@@ -18,6 +18,10 @@ namespace Network.ViewModels
             this.AddRange(items);
         }
 
+        public PaginatedList()
+        {
+        }
+
         public bool HasPreviousPage
         {
             get
