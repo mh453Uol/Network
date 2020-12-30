@@ -22,5 +22,14 @@ namespace Network.Core
 
         public bool IsDeleted { get; set; }
 
+        public void UnlikePost()
+        {
+            IsDeleted = true;
+        }
+
+        public void LikePost()
+        {
+            IsDeleted = false;
+        }
     }
 }

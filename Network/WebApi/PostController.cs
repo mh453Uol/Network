@@ -48,9 +48,9 @@ namespace Network.WebApi
                 return NotFound();
             }
 
-            var liked = await HasLiked(postId, userId);
+            var like = await HasLiked(postId, userId);
 
-            if (liked == null)
+            if (like == null)
             {
                 await _dbContext.Likes.AddAsync(new Like()
                 {
@@ -63,11 +63,9 @@ namespace Network.WebApi
             }
             else
             {
-                var alreadyLiked = _dbContext.Likes.Attach(liked);
-                
-                alreadyLiked.Entity.IsDeleted = false;
+                like.LikePost();
+                _dbContext.Entry<Like>(like).Property(ee => ee.IsDeleted).IsModified = true;
 
-                _dbContext.Entry<Like>(alreadyLiked.Entity).Property(ee => ee.IsDeleted).IsModified = true;
             }
 
             await _dbContext.SaveChangesAsync();
@@ -94,11 +92,9 @@ namespace Network.WebApi
 
             if (liked != null)
             {
-                var cancelLike = _dbContext.Likes.Attach(liked);
-                
-                cancelLike.Entity.IsDeleted = true;
+                liked.UnlikePost();
 
-                _dbContext.Entry<Like>(cancelLike.Entity).Property(ee => ee.IsDeleted).IsModified = true;
+                _dbContext.Entry<Like>(liked).Property(ee => ee.IsDeleted).IsModified = true;
 
                 await _dbContext.SaveChangesAsync();
             }
@@ -107,6 +103,7 @@ namespace Network.WebApi
 
             return Ok(new { PostLikes = likeCount });
         }
+
 
         public async Task<int> GetLikeCountAsync(Guid postId)
         {
@@ -119,7 +116,6 @@ namespace Network.WebApi
         public async Task<Like> HasLiked(Guid postId, Guid userId)
         {
             return await _dbContext.Likes
-                   .AsNoTracking()
                    .Select(l => new Like
                    {
                        Id = l.Id,
