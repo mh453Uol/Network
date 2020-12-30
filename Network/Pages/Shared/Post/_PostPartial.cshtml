@@ -13,6 +13,10 @@
         overflow: hidden;
         white-space: pre-line;
     }
+
+    .js-like-count[data-like-count="0"] {
+        display: none;
+    }
 </style>
 
 @{
@@ -43,19 +47,16 @@
             <p class="truncate-text card-text">@Model.Content</p>
         </div>
 
-        <div class="card-text mb-1">
-            @if (Model.LikeSet.Count > 1)
-            {
-                <span class="badge badge-pill badge-primary">@Model.Likes.Count Likes</span>
-            }
+        <div class="card-text mb-2">
+            <span class="badge badge-pill badge-primary js-like-count" data-like-count="@Model.LikeSet.Count" data-post-id="@Model.Id">@Model.LikeSet.Count @(Model.LikeSet.Count == 1 ? "Like" : "Likes")</span>
         </div>
 
         @{
             var liked = Model.LikeSet.Contains(userId);
-            var cssClass = liked ? "js-liked" : "js-not-liked";
-            var label = liked ? "Unlike" : "Like";
+            var cssClass = liked ? "btn-primary" : "btn-light";
+            var label = liked ? "Liked" : "Like";
         }
-     
-        <button type="button" class="btn btn-light btn-block @cssClass" data-post-id="@Model.Id">@label</button>
+
+        <button type="button" class="js-like btn @cssClass btn-block" data-liked="@liked" data-post-id="@Model.Id">@label</button>
     </div>
 </div>

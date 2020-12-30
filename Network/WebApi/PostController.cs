@@ -41,16 +41,14 @@ namespace Network.WebApi
         {
             var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-            var postExists = await _dbContext.Posts.AnyAsync(p => p.Id == postId);
+            var postExists = await _dbContext.Posts.AsNoTracking().AnyAsync(p => p.Id == postId);
 
             if (!postExists)
             {
                 return NotFound();
             }
 
-            var liked = await _dbContext.Likes
-                    .Select(l => new Like { Id = l.Id, CreatedByUserId = l.CreatedByUserId })
-                    .FirstOrDefaultAsync(l => l.CreatedByUserId == userId);
+            var liked = await HasLiked(postId, userId);
 
             if (liked == null)
             {
@@ -65,16 +63,70 @@ namespace Network.WebApi
             }
             else
             {
-                liked.IsDeleted = !liked.IsDeleted;
-
                 var alreadyLiked = _dbContext.Likes.Attach(liked);
+                
+                alreadyLiked.Entity.IsDeleted = false;
 
                 _dbContext.Entry<Like>(alreadyLiked.Entity).Property(ee => ee.IsDeleted).IsModified = true;
             }
 
             await _dbContext.SaveChangesAsync();
 
-            return Ok();
+            var likeCount = await GetLikeCountAsync(postId);
+
+            return Ok(new { PostLikes = likeCount });
+        }
+
+        [Route("{postId:guid}/like")]
+        [HttpDelete]
+        public async Task<IActionResult> CancelLike(Guid postId)
+        {
+            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            var postExists = await _dbContext.Posts.AnyAsync(p => p.Id == postId);
+
+            if (!postExists)
+            {
+                return NotFound();
+            }
+
+            var liked = await HasLiked(postId, userId);
+
+            if (liked != null)
+            {
+                var cancelLike = _dbContext.Likes.Attach(liked);
+                
+                cancelLike.Entity.IsDeleted = true;
+
+                _dbContext.Entry<Like>(cancelLike.Entity).Property(ee => ee.IsDeleted).IsModified = true;
+
+                await _dbContext.SaveChangesAsync();
+            }
+
+            var likeCount = await GetLikeCountAsync(postId);
+
+            return Ok(new { PostLikes = likeCount });
+        }
+
+        public async Task<int> GetLikeCountAsync(Guid postId)
+        {
+            return await _dbContext.Likes
+                    .AsNoTracking()
+                    .Where(l => l.PostId == postId && l.IsDeleted == false)
+                    .CountAsync();
+        }
+
+        public async Task<Like> HasLiked(Guid postId, Guid userId)
+        {
+            return await _dbContext.Likes
+                   .AsNoTracking()
+                   .Select(l => new Like
+                   {
+                       Id = l.Id,
+                       PostId = l.PostId,
+                       CreatedByUserId = l.CreatedByUserId
+                   })
+                   .FirstOrDefaultAsync(l => l.PostId == postId && l.CreatedByUserId == userId);
         }
 
     }
