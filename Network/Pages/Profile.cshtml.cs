@@ -19,6 +19,10 @@ namespace Network.Pages
         private readonly NetworkDbContext _dbContext;
         private readonly ILogger<ProfileModel> _logger;
 
+        [BindProperty(SupportsGet = true)]
+        public int PageIndex { get; set; }
+        public int PageSize { get; } = 5;
+
         public ApplicationUser ProfileUser { get; set; }
         public bool UserLoggedIn { get; set; }
 
@@ -29,21 +33,21 @@ namespace Network.Pages
             _userManager = userManager;
             _dbContext = dbContext;
             _logger = logger;
+
+            PageIndex = 1;
         }
-
-
 
         public async Task<IActionResult> OnGetAsync(Guid id)
         {
+            PageIndex = Math.Max(1, PageIndex);
+
             ProfileUser = await _dbContext.Users.Select(u => new ApplicationUser
             {
                 Id = u.Id,
                 Firstname = u.Firstname,
                 Surname = u.Surname
             })
-            .SingleOrDefaultAsync(u => u.Id == id);
-
-           UserLoggedIn = User.Identity.IsAuthenticated;
+            .FirstOrDefaultAsync(u => u.Id == id);
 
             return Page();
         }

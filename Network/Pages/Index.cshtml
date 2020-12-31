@@ -5,40 +5,7 @@
 }
 <partial name="Post/_NewPostPartial" model="new Post()" />
 
-@foreach (var post in Model.Posts)
-{
-    <partial name="Post/_PostPartial" model="post" />
-}
-
-@{
-    var prevDisabled = !Model.Posts.HasPreviousPage ? "disabled" : "";
-    var nextDisabled = !Model.Posts.HasNextPage ? "disabled" : "";
-}
-
-<nav aria-label="..." class="mt-2">
-    <ul class="pagination">
-        <li class="page-item @prevDisabled">
-            <a asp-page="Index"
-               asp-route-PageIndex="@(Model.Posts.PageIndex - 1)"
-               class="page-link">
-                Previous
-            </a>
-        </li>
-        @for (var i = 1; i <= Model.Posts.TotalPages; i++)
-        {
-            <li class="page-item @(i == Model.Posts.PageIndex ? "active" : "")">
-                <a class="page-link" asp-page="Index" asp-route-PageIndex="@i">@i</a>
-            </li>
-        }
-        <li class="page-item @nextDisabled">
-            <a asp-action="Index"
-               asp-route-PageIndex="@(Model.Posts.PageIndex + 1)"
-               class="page-link">
-                Next
-            </a>
-        </li>
-    </ul>
-</nav>
+@await Component.InvokeAsync("PaginatedPosts", new { pageIndex = Model.PageIndex, pageSize = Model.PageSize })
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

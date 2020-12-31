@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Network.Core;
 using Network.Data;
+using Network.Util;
 using Network.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -23,12 +24,10 @@ namespace Network.Pages
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<IndexModel> _logger;
 
-        public PaginatedList<Post> Posts { get; set; }
-
         [BindProperty(SupportsGet = true)]
         public int PageIndex { get; set; }
 
-        public int PageSize { get; } = 10;
+        public int PageSize { get; } = 30;
 
         public IndexModel(SignInManager<ApplicationUser> signInManager,
             ILogger<IndexModel> logger,
@@ -41,34 +40,11 @@ namespace Network.Pages
             _logger = logger;
 
             PageIndex = 1;
-            Posts = new PaginatedList<Post>();
         }
 
-        public async Task<IActionResult> OnGetAsync()
+        public IActionResult OnGet()
         {
-            var posts = _dbContext.Posts.AsNoTracking()
-                .OrderByDescending(p => p.CreatedOn)
-                .Include(p => p.UpdatedByUser)
-                .Include(p => p.Likes)
-                .Select(p => new Post
-                {
-                    Id = p.Id,
-                    Content = p.Content,
-                    UpdatedOn = p.UpdatedOn,
-                    UserId = p.UserId,
-                    User = new ApplicationUser
-                    {
-                        Id = p.User.Id,
-                        Firstname = p.User.Firstname,
-                        Surname = p.User.Surname
-                    },
-                    // Have to do .ToList().ToHashSet() rather than ToHashSet() due to this issue - https://github.com/dotnet/efcore/issues/20101
-                    LikeSet = p.Likes.Where(l => l.IsDeleted == false).Select(l => l.CreatedByUserId).ToList().ToHashSet()
-                });
-
             PageIndex = Math.Max(1, PageIndex);
-
-            Posts = await PaginatedList<Post>.CreateAsync(posts, PageIndex, PageSize);
 
             return Page();
         }
