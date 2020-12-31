@@ -3,15 +3,12 @@
 @{
     ViewData["Title"] = "Home";
 }
-
-
 <partial name="Post/_NewPostPartial" model="new Post()" />
 
 @foreach (var post in Model.Posts)
 {
     <partial name="Post/_PostPartial" model="post" />
 }
-
 
 @{
     var prevDisabled = !Model.Posts.HasPreviousPage ? "disabled" : "";
@@ -45,70 +42,4 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-
-            const likeEl = document.querySelectorAll(".js-like");
-
-            likeEl.forEach(button => button.addEventListener("click", like));
-
-            function getPostIdAttribute(e) {
-                return e.target.dataset.postId;
-            }
-
-            function hasUserLikedPostAttribute(e) {
-                return e.target.dataset.liked === "True";
-            }
-
-            function toggleLikeButton(likeEl, removedLike) {
-                // 1. Update button data attribute (data-liked="<boolean>")
-                // 2. Update button class e.g liked = "btn btn-primary" removed like = "btn btn-light"
-                // 3. Update button text
-
-                likeEl.dataset.liked = removedLike ? "False" : "True";
-
-                if (removedLike) {
-                    likeEl.classList.remove("btn-primary");
-                    likeEl.classList.add("btn-light");
-                    likeEl.innerText = "Like";
-                } else {
-                    likeEl.classList.remove("btn-light");
-                    likeEl.classList.add("btn-primary");
-                    likeEl.innerText = "Liked";
-                }
-            }
-
-
-            function updateLikeBadge(postId, likeCount) {
-                const likeBadgeEl = document.querySelector(`.js-like-count[data-post-id="${postId}"]`);
-
-                likeBadgeEl.dataset.likeCount = likeCount;
-                likeBadgeEl.innerHTML = `${likeCount} ${likeCount == 1 ? "Like" : "Likes"}`;
-            }
-
-            function like(e) {
-                const likeEl = e.target;
-                const postId = getPostIdAttribute(e);
-                const removedLike = hasUserLikedPostAttribute(e);
-
-                const baseUrl = window.location.origin;
-                const likeUrl = `${baseUrl}/api/post/${postId}/like`;
-
-                // When user has liked a post already and clicks like again we remove/cancel the like, by making a DELETE request.
-                // When user has NOT liked a post and clicks like we make a POST request.
-                fetch(likeUrl, {
-                    method: removedLike ? "DELETE" : "POST",
-                }).then(response => {
-                    return response.json();
-                }).then(data => {
-                    console.log(data);
-                    toggleLikeButton(likeEl, removedLike);
-                    updateLikeBadge(postId, data.postLikes);
-                });
-            }
-
-
-
-        })
-    </script>
 }

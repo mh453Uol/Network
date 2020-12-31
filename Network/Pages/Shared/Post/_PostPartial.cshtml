@@ -1,23 +1,6 @@
 ﻿@model Post
 
 @using System.Security.Claims
-<style>
-    .truncate-text-container {
-        max-height: 500px;
-    }
-
-    .truncate-text {
-        -webkit-box-orient: vertical;
-        display: -webkit-box;
-        -webkit-line-clamp: 10;
-        overflow: hidden;
-        white-space: pre-line;
-    }
-
-    .js-like-count[data-like-count="0"] {
-        display: none;
-    }
-</style>
 
 @{
     var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
