@@ -1,15 +1,14 @@
 ﻿@model Post
-
-@using System.Security.Claims
+@using Util
 
 @{
-    var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+    var userId = User.GetUserId();
 }
 <div class="card mt-2">
     <div class="card-body">
         <div class="d-flex justify-content-between align-self-center">
             <h5>
-                <a asp-page="profile" asp-route-id="@Model.User.Id">@Model.User.FullName</a>
+                <a asp-page="Profile" asp-route-id="@Model.User.Id">@Model.User.FullName</a>
             </h5>
             @if (userId == Model.UserId)
             {
@@ -34,12 +33,14 @@
             <span class="badge badge-pill badge-primary js-like-count" data-like-count="@Model.LikeSet.Count" data-post-id="@Model.Id">@Model.LikeSet.Count @(Model.LikeSet.Count == 1 ? "Like" : "Likes")</span>
         </div>
 
-        @{
-            var liked = Model.LikeSet.Contains(userId);
+        @if (userId.HasValue)
+        {
+
+            var liked = Model.LikeSet.Contains(userId.Value);
             var cssClass = liked ? "btn-primary" : "btn-light";
             var label = liked ? "Liked" : "Like";
-        }
 
-        <button type="button" class="js-like btn @cssClass btn-block" data-liked="@liked" data-post-id="@Model.Id">@label</button>
+            <button type="button" class="js-like btn @cssClass btn-block" data-liked="@liked" data-post-id="@Model.Id">@label</button>
+        }
     </div>
 </div>
