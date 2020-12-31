@@ -26,7 +26,7 @@
     <div class="card-body">
         <div class="d-flex justify-content-between align-self-center">
             <h5>
-                <a href="#">@Model.User.FullName</a>
+                <a asp-page="profile" asp-route-id="@Model.User.Id">@Model.User.FullName</a>
             </h5>
             @if (userId == Model.UserId)
             {
