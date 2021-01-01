@@ -25,7 +25,7 @@
 
 var profileController = function (userService) {
     function initialize() {
-        const followButton = document.querySelector(".js-follow-button ");
+        const followButton = document.querySelector(".js-follow-button");
 
         followButton.addEventListener("click", (e) => {
             const hasFollowedUser = e.target.dataset.following == "True";
@@ -35,20 +35,38 @@ var profileController = function (userService) {
                 // Unfollow user since has clicked button again.
                 userService.unfollow(profileUserId)
                     .then(data => {
-                        setFollowersCount();
+                        setFollowersCount(data.followersCount);
+                        showFollowButton(followButton);
                     })
             } else {
                 // Follow user since has not followed user before.
                 userService.follow(profileUserId)
                     .then(data => {
-                        setFollowersCount();
+                        setFollowersCount(data.followersCount);
+                        showFollowingButton(followButton);
                     })
             }
-        })
+        }) 
     }
 
-    function setFollowersCount() {
+    function showFollowButton(followButtonEl) {
+        followButtonEl.dataset.following = "False";
+        followButtonEl.classList.remove("btn-primary");
+        followButtonEl.classList.add("btn-light");
+        followButtonEl.innerHTML = "Follow";
+    }
 
+    function showFollowingButton(followButtonEl) {
+        followButtonEl.dataset.following = "True";
+        followButtonEl.classList.remove("btn-light");
+        followButtonEl.classList.add("btn-primary");
+        followButtonEl.innerHTML = "Following";
+    }
+
+    function setFollowersCount(count) {
+        var button = document.querySelector(".js-followers-count");
+
+        button.innerHTML = count;
     }
 
     return {

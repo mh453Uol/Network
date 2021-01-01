@@ -25,5 +25,15 @@ namespace Network.Core
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
         public bool IsDeleted { get; set; }
+
+        public void Unfollow()
+        {
+            IsDeleted = true;
+        }
+
+        public void Follow()
+        {
+            IsDeleted = false;
+        }
     }
 }

@@ -60,8 +60,8 @@ namespace Network.Pages
                     Id = u.Id,
                     Firstname = u.Firstname,
                     Surname = u.Surname,
-                    FollowersCount = u.Followers.Count(),
-                    FollowingCount = u.Following.Count()
+                    FollowersCount = u.Followers.Where(f => f.IsDeleted == false).Count(),
+                    FollowingCount = u.Following.Where(f => f.IsDeleted == false).Count()
                 })
                 .SingleOrDefaultAsync(u => u.Id == id);
 
