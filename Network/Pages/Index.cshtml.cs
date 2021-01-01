@@ -16,7 +16,6 @@ using System.Threading.Tasks;
 
 namespace Network.Pages
 {
-    [Authorize]
     public class IndexModel : PageModel
     {
         private readonly UserManager<ApplicationUser> _userManager;

@@ -9,9 +9,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Network.Core;
 using Network.Data;
+using Network.Util;
 
 namespace Network.Pages
 {
+    public class ProfileViewModel : ApplicationUser
+    {
+        public int FollowingCount { get; set; }
+        public int FollowersCount { get; set; }
+    }
 
     public class ProfileModel : PageModel
     {
@@ -23,8 +29,9 @@ namespace Network.Pages
         public int PageIndex { get; set; }
         public int PageSize { get; } = 5;
 
-        public ApplicationUser ProfileUser { get; set; }
-        public bool UserLoggedIn { get; set; }
+        public bool IsFollowingUser { get; set; }
+
+        public ProfileViewModel ProfileUser { get; set; }
 
         public ProfileModel(ILogger<ProfileModel> logger,
             UserManager<ApplicationUser> userManager,
@@ -39,15 +46,28 @@ namespace Network.Pages
 
         public async Task<IActionResult> OnGetAsync(Guid id)
         {
-            PageIndex = Math.Max(1, PageIndex);
+            ProfileUser = await _dbContext.Users
+                .Include(u => u.Followers)
+                .Include(u => u.Following)
+                .Select(u => new ProfileViewModel
+                {
+                    Id = u.Id,
+                    Firstname = u.Firstname,
+                    Surname = u.Surname,
+                    FollowersCount = u.Followers.Count(),
+                    FollowingCount = u.Following.Count()
+                })
+                .SingleOrDefaultAsync(u => u.Id == id);
 
-            ProfileUser = await _dbContext.Users.Select(u => new ApplicationUser
+            if (User.Identity.IsAuthenticated && ProfileUser.FollowersCount > 0)
             {
-                Id = u.Id,
-                Firstname = u.Firstname,
-                Surname = u.Surname
-            })
-            .FirstOrDefaultAsync(u => u.Id == id);
+                var userId = User.GetUserId();
+
+                IsFollowingUser = await _dbContext.Follows
+                        .AnyAsync(f => f.FolloweeId == id && f.FollowerId == userId);
+            }
+
+            PageIndex = Math.Max(1, PageIndex);
 
             return Page();
         }

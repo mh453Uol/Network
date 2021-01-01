@@ -8,19 +8,27 @@
 <ul class="list-group">
     <li class="list-group-item d-flex justify-content-between align-items-center list-group-item-action">
         <a asp-page="followers" asp-route-userId="@Model.ProfileUser.Id">Followers</a>
-        <span class="badge badge-primary badge-pill">14</span>
+        <span class="badge badge-primary badge-pill">@Model.ProfileUser.FollowersCount</span>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
         <a asp-page="following" asp-route-userId="@Model.ProfileUser.Id">Following</a>
-        <span class="badge badge-primary badge-pill">2</span>
+        <span class="badge badge-primary badge-pill">@Model.ProfileUser.FollowingCount</span>
     </li>
 </ul>
 
-<div class="mt-3 mb-3">
-    <button type="button" class="btn btn-light btn-block">
-        Follow
-    </button>
-</div>
+
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="mt-3 mb-3">
+        @{
+            var label = Model.IsFollowingUser ? "Following" : "Follow";
+            var cssClass = Model.IsFollowingUser ? "btn-primary" : "btn-light";
+        }
+        <button type="button" class="js-follow-button btn @cssClass btn-block" data-following="@Model.IsFollowingUser">
+            @label
+        </button>
+    </div>
+}
 
 @await Component.InvokeAsync("PaginatedPosts", new { pageIndex = Model.PageIndex, pageSize = Model.PageSize, userId = Model.ProfileUser.Id })
 
