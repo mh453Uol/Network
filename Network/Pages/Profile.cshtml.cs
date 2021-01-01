@@ -29,6 +29,8 @@ namespace Network.Pages
         public int PageIndex { get; set; }
         public int PageSize { get; } = 5;
 
+        public bool IsFollowUserButtonVisible { get; set; }
+
         public bool IsFollowingUser { get; set; }
 
         public ProfileViewModel ProfileUser { get; set; }
@@ -46,6 +48,10 @@ namespace Network.Pages
 
         public async Task<IActionResult> OnGetAsync(Guid id)
         {
+            var userId = User.GetUserId();
+
+            IsFollowUserButtonVisible = User.Identity.IsAuthenticated && userId != id;
+
             ProfileUser = await _dbContext.Users
                 .Include(u => u.Followers)
                 .Include(u => u.Following)
@@ -59,10 +65,8 @@ namespace Network.Pages
                 })
                 .SingleOrDefaultAsync(u => u.Id == id);
 
-            if (User.Identity.IsAuthenticated && ProfileUser.FollowersCount > 0)
+            if (IsFollowUserButtonVisible && ProfileUser.FollowersCount > 0)
             {
-                var userId = User.GetUserId();
-
                 IsFollowingUser = await _dbContext.Follows
                         .AnyAsync(f => f.FolloweeId == id && f.FollowerId == userId);
             }

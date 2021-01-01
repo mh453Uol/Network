@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Network.Core;
 using Network.Data;
+using Network.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,7 +40,7 @@ namespace Network.WebApi
         [HttpPost]
         public async Task<IActionResult> Like(Guid postId)
         {
-            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var userId = User.GetUserId();
 
             var postExists = await _dbContext.Posts.AsNoTracking().AnyAsync(p => p.Id == postId);
 
@@ -48,15 +49,15 @@ namespace Network.WebApi
                 return NotFound();
             }
 
-            var like = await HasLiked(postId, userId);
+            var like = await HasLiked(postId, userId.Value);
 
             if (like == null)
             {
                 await _dbContext.Likes.AddAsync(new Like()
                 {
                     PostId = postId,
-                    CreatedByUserId = userId,
-                    UpdatedByUserId = userId,
+                    CreatedByUserId = userId.Value,
+                    UpdatedByUserId = userId.Value,
                     CreatedOn = DateTime.Now,
                     UpdatedOn = DateTime.Now
                 });
@@ -65,7 +66,6 @@ namespace Network.WebApi
             {
                 like.LikePost();
                 _dbContext.Entry<Like>(like).Property(ee => ee.IsDeleted).IsModified = true;
-
             }
 
             await _dbContext.SaveChangesAsync();
@@ -79,16 +79,16 @@ namespace Network.WebApi
         [HttpDelete]
         public async Task<IActionResult> CancelLike(Guid postId)
         {
-            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var userId = User.GetUserId();
 
-            var postExists = await _dbContext.Posts.AnyAsync(p => p.Id == postId);
+            var postExists = await _dbContext.Posts.AsNoTracking().AnyAsync(p => p.Id == postId);
 
             if (!postExists)
             {
                 return NotFound();
             }
 
-            var liked = await HasLiked(postId, userId);
+            var liked = await HasLiked(postId, userId.Value);
 
             if (liked != null)
             {

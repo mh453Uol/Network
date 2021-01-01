@@ -17,14 +17,14 @@
 </ul>
 
 
-@if (User.Identity.IsAuthenticated)
+@if (Model.IsFollowUserButtonVisible)
 {
     <div class="mt-3 mb-3">
         @{
             var label = Model.IsFollowingUser ? "Following" : "Follow";
             var cssClass = Model.IsFollowingUser ? "btn-primary" : "btn-light";
         }
-        <button type="button" class="js-follow-button btn @cssClass btn-block" data-following="@Model.IsFollowingUser">
+        <button type="button" class="js-follow-button btn @cssClass btn-block" data-following="@Model.IsFollowingUser" data-user-id="@Model.ProfileUser.Id">
             @label
         </button>
     </div>

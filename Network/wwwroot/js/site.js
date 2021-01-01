@@ -1,4 +1,63 @@
-﻿var postService = function () {
+﻿var userService = function () {
+    const baseUrl = window.location.origin;
+
+    function follow(userId) {
+        const followUrl = `${baseUrl}/api/follow/${userId}`;
+
+        return fetch(followUrl, {
+            method: "POST",
+        }).then(response => response.json());
+    }
+
+    function unfollow(userId) {
+        const followUrl = `${baseUrl}/api/follow/${userId}`;
+
+        return fetch(followUrl, {
+            method: "DELETE",
+        }).then(response => response.json());
+    }
+
+    return {
+        follow: follow,
+        unfollow: unfollow
+    }
+}();
+
+var profileController = function (userService) {
+    function initialize() {
+        const followButton = document.querySelector(".js-follow-button ");
+
+        followButton.addEventListener("click", (e) => {
+            const hasFollowedUser = e.target.dataset.following == "True";
+            const profileUserId = e.target.dataset.userId;
+
+            if (hasFollowedUser) {
+                // Unfollow user since has clicked button again.
+                userService.unfollow(profileUserId)
+                    .then(data => {
+                        setFollowersCount();
+                    })
+            } else {
+                // Follow user since has not followed user before.
+                userService.follow(profileUserId)
+                    .then(data => {
+                        setFollowersCount();
+                    })
+            }
+        })
+    }
+
+    function setFollowersCount() {
+
+    }
+
+    return {
+        initialize: initialize
+    }
+
+}(userService);
+
+var postService = function () {
 
     const baseUrl = window.location.origin;
 
@@ -83,7 +142,7 @@ var postController = function (postService) {
                 updateLikeBadge(postId, data.postLikes);
             });
         }
-        
+
     }
 
     return {
@@ -94,4 +153,5 @@ var postController = function (postService) {
 
 document.addEventListener("DOMContentLoaded", function () {
     postController.initialize();
+    profileController.initialize();
 })
