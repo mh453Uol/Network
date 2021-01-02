@@ -54,11 +54,13 @@ namespace Network.ViewComponents
         }
 
 
-        public async Task<IViewComponentResult> InvokeAsync(int pageIndex, int pageSize, Guid? userId)
+        public async Task<IViewComponentResult> InvokeAsync(int pageIndex, int pageSize, Guid? userId, string tab = null)
         {
             var query = GetAllPosts(userId);
 
             var paginated = await PaginatedList<Post>.CreateAsync(query, pageIndex, pageSize);
+
+            paginated.AdditionalQueryStrings = new Dictionary<string, string>() { { "tab", tab } };
 
             return View(paginated);
         }

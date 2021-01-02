@@ -15,17 +15,10 @@ namespace Network.ViewComponents
     public class PaginatedFollowingViewComponent : ViewComponent
     {
         private readonly NetworkDbContext _dbContext;
-        private IQueryable<UserFollow> Query { get; set; }
 
         public PaginatedFollowingViewComponent(NetworkDbContext dbContext)
         {
             _dbContext = dbContext;
-        }
-
-        public enum ViewComponentType
-        {
-            Following,
-            Followers
         }
 
         public IQueryable<UserFollow> GetFollowing(Guid? userId)
@@ -36,9 +29,9 @@ namespace Network.ViewComponents
                     .Include(f => f.Followee)
                     .Select(f => new UserFollow()
                     {
-                        FolloweeId = f.FolloweeId,
                         Followee = new ApplicationUser
                         {
+                            Id = f.Followee.Id,
                             Firstname = f.Followee.Firstname,
                             Surname = f.Followee.Surname
                         }
@@ -46,11 +39,13 @@ namespace Network.ViewComponents
         }
 
 
-        public async Task<IViewComponentResult> InvokeAsync(int pageIndex, int pageSize, Guid userId, int? totalCount)
+        public async Task<IViewComponentResult> InvokeAsync(int pageIndex, int pageSize, Guid userId, int? totalCount, string tab = null)
         {
-            Query = GetFollowing(userId);
+            var query = GetFollowing(userId);
            
-            var paginated = await PaginatedList<UserFollow>.CreateAsync(Query, pageIndex, pageSize, totalCount);
+            var paginated = await PaginatedList<UserFollow>.CreateAsync(query, pageIndex, pageSize, totalCount);
+
+            paginated.AdditionalQueryStrings = new Dictionary<string, string>() { { "tab", tab } };
 
             return View(paginated);
         }

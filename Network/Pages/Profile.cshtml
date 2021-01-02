@@ -44,34 +44,37 @@
     @if (postTabVisible)
     {
         <div>
-            @await Component.InvokeAsync("PaginatedPosts", new { 
-                pageIndex = Model.PageIndex,
-                pageSize = Model.PageSize, 
-                userId = Model.ProfileUser.Id 
+            @await Component.InvokeAsync("PaginatedPosts", new {
+               pageIndex = Model.PageIndex,
+               pageSize = Model.PageSize,
+               userId = Model.ProfileUser.Id,
+               tab = Model.Tab
             })
         </div>
     }
 
-    @if (followersTabVisible)
+    @if (followersTabVisible && Model.FollowerCount > 0)
     {
         <div>
             @await Component.InvokeAsync("PaginatedFollowers", new {
                pageIndex = Model.PageIndex,
                pageSize = Model.PageSize,
                userId = Model.ProfileUser.Id,
-               totalCount = Model.FollowerCount
+               totalCount = Model.FollowerCount,
+               tab = Model.Tab
             })
         </div>
     }
 
-    @if (followingTabVisible)
+    @if (followingTabVisible && Model.FollowingCount > 0)
     {
         <div>
             @await Component.InvokeAsync("PaginatedFollowing", new {
                pageIndex = Model.PageIndex,
                pageSize = Model.PageSize,
                userId = Model.ProfileUser.Id,
-               totalCount = Model.FollowingCount
+               totalCount = Model.FollowingCount,
+               tab = Model.Tab
             })
         </div>
     }

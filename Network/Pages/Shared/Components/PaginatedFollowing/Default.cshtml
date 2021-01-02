@@ -1,6 +1,14 @@
 ﻿@model PaginatedList<UserFollow>
 
-@foreach(var user in Model)
+@foreach (var user in Model)
 {
-    <div>@user.Followee.FullName</div>
+    <div class="card mt-2">
+        <div class="card-body">
+            <h5 class="mb-0">
+                <a asp-page="Profile" asp-route-id="@user.Followee.Id">@user.Followee.FullName</a>
+            </h5>
+        </div>
+    </div>
 }
+
+<partial name="Paginated/_Footer" model="new PaginatedFooter(Model.PageIndex, Model.TotalPages, Model.AdditionalQueryStrings)" />

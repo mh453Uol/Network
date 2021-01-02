@@ -32,18 +32,21 @@ namespace Network.ViewComponents
                         FollowerId = f.FollowerId,
                         Follower = new ApplicationUser
                         {
+                            Id = f.Follower.Id,
                             Firstname = f.Follower.Firstname,
                             Surname = f.Follower.Surname
                         }
                     });
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(int pageIndex, int pageSize, Guid userId, int? totalCount)
+        public async Task<IViewComponentResult> InvokeAsync(int pageIndex, int pageSize, Guid userId, int? totalCount, string tab = null)
         {
             var query = GetFollowers(userId);
-           
+
             var paginated = await PaginatedList<UserFollow>.CreateAsync(query, pageIndex, pageSize, totalCount);
 
+            paginated.AdditionalQueryStrings = new Dictionary<string, string>() { { "tab", tab } };
+            
             return View(paginated);
         }
     }

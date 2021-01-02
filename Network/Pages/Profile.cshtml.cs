@@ -67,7 +67,7 @@ namespace Network.Pages
             if (IsFollowUserButtonVisible && FollowerCount > 0)
             {
                 IsFollowingUser = await _dbContext.Follows
-                        .AnyAsync(f => f.FolloweeId == id && f.FollowerId == UserId.Value);
+                        .AnyAsync(f => f.FolloweeId == id && f.FollowerId == UserId.Value && f.IsDeleted == false);
             }
 
             PageIndex = Math.Max(1, PageIndex);
