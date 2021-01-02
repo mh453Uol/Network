@@ -38,11 +38,16 @@ namespace Network.ViewModels
             }
         }
 
-        public static async Task<PaginatedList<T>> CreateAsync(IQueryable<T> source, int pageIndex, int pageSize)
+        public static async Task<PaginatedList<T>> CreateAsync(IQueryable<T> source, int pageIndex, int pageSize, int? count = null)
         {
-            var count = await source.CountAsync();
+            if (!count.HasValue)
+            {
+                // Get the total count of records for the resource.
+                count = await source.CountAsync();
+            }
+
             var items = await source.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
-            return new PaginatedList<T>(items, count, pageIndex, pageSize);
+            return new PaginatedList<T>(items, count.Value, pageIndex, pageSize);
         }
 
     }

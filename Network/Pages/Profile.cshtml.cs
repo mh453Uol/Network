@@ -13,27 +13,27 @@ using Network.Util;
 
 namespace Network.Pages
 {
-    public class ProfileViewModel : ApplicationUser
-    {
-        public int FollowingCount { get; set; }
-        public int FollowersCount { get; set; }
-    }
 
     public class ProfileModel : PageModel
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly NetworkDbContext _dbContext;
         private readonly ILogger<ProfileModel> _logger;
+        public Guid? UserId { get; set; }
 
         [BindProperty(SupportsGet = true)]
         public int PageIndex { get; set; }
         public int PageSize { get; } = 5;
 
+        [BindProperty(SupportsGet = true)]
+        public string Tab { get; set; }
+
         public bool IsFollowUserButtonVisible { get; set; }
-
         public bool IsFollowingUser { get; set; }
+        public int FollowerCount { get; set; }
+        public int FollowingCount { get; set; }
 
-        public ProfileViewModel ProfileUser { get; set; }
+        public ApplicationUser ProfileUser { get; set; }
 
         public ProfileModel(ILogger<ProfileModel> logger,
             UserManager<ApplicationUser> userManager,
@@ -48,32 +48,36 @@ namespace Network.Pages
 
         public async Task<IActionResult> OnGetAsync(Guid id)
         {
-            var userId = User.GetUserId();
+            UserId = User.GetUserId();
 
-            IsFollowUserButtonVisible = User.Identity.IsAuthenticated && userId != id;
+            IsFollowUserButtonVisible = User.Identity.IsAuthenticated && UserId.Value != id;
 
             ProfileUser = await _dbContext.Users
-                .Include(u => u.Followers)
-                .Include(u => u.Following)
-                .Select(u => new ProfileViewModel
+                .Select(u => new ApplicationUser
                 {
                     Id = u.Id,
                     Firstname = u.Firstname,
                     Surname = u.Surname,
-                    FollowersCount = u.Followers.Where(f => f.IsDeleted == false).Count(),
-                    FollowingCount = u.Following.Where(f => f.IsDeleted == false).Count()
                 })
                 .SingleOrDefaultAsync(u => u.Id == id);
 
-            if (IsFollowUserButtonVisible && ProfileUser.FollowersCount > 0)
+            FollowerCount = await _dbContext.Follows.Where(f => f.FolloweeId == id && f.IsDeleted == false).CountAsync();
+            FollowingCount = await _dbContext.Follows.Where(f => f.FollowerId == id && f.IsDeleted == false).CountAsync();
+
+            if (IsFollowUserButtonVisible && FollowerCount > 0)
             {
                 IsFollowingUser = await _dbContext.Follows
-                        .AnyAsync(f => f.FolloweeId == id && f.FollowerId == userId);
+                        .AnyAsync(f => f.FolloweeId == id && f.FollowerId == UserId.Value);
             }
 
             PageIndex = Math.Max(1, PageIndex);
 
             return Page();
+        }
+
+        public bool IsTabVisible(string tab)
+        {
+            return Tab == tab;
         }
     }
 }

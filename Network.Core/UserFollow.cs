@@ -12,6 +12,10 @@ namespace Network.Core
             FollowerId = followerId;
         }
 
+        public UserFollow()
+        {
+
+        }
         public Guid FolloweeId { get; set; }
         public ApplicationUser Followee { get; set; }
 

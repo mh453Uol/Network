@@ -1,0 +1,6 @@
+﻿@model PaginatedList<UserFollow>
+
+@foreach(var user in Model)
+{
+    <div>@user.Followee.FullName</div>
+}

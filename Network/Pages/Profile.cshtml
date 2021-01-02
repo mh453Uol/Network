@@ -3,19 +3,7 @@
 @{
     ViewData["Title"] = Model.ProfileUser.FullName;
 }
-<h2 class="text-center">@Model.ProfileUser.FullName</h2>
-
-<ul class="list-group">
-    <li class="list-group-item d-flex justify-content-between align-items-center list-group-item-action">
-        <a asp-page="followers" asp-route-userId="@Model.ProfileUser.Id">Followers</a>
-        <span class="badge badge-primary badge-pill js-followers-count">@Model.ProfileUser.FollowersCount</span>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-        <a asp-page="following" asp-route-userId="@Model.ProfileUser.Id">Following</a>
-        <span class="badge badge-primary badge-pill">@Model.ProfileUser.FollowingCount</span>
-    </li>
-</ul>
-
+<h2 class="mb-3">@Model.ProfileUser.FullName</h2>
 
 @if (Model.IsFollowUserButtonVisible)
 {
@@ -30,7 +18,68 @@
     </div>
 }
 
-@await Component.InvokeAsync("PaginatedPosts", new { pageIndex = Model.PageIndex, pageSize = Model.PageSize, userId = Model.ProfileUser.Id })
+@{
+    var postTabVisible = Model.IsTabVisible("posts");
+    var followersTabVisible = Model.IsTabVisible("followers");
+    var followingTabVisible = Model.IsTabVisible("following");
+}
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link @(postTabVisible ? "active": "")" asp-page="profile" asp-route-tab="posts" role="tab">Posts</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(followersTabVisible ? "active": "")" asp-page="profile" asp-route-tab="followers" role="tab">
+            Followers
+            <span class="badge badge-info badge-pill js-followers-count">@Model.FollowerCount</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(followingTabVisible ? "active": "")" asp-page="profile" asp-route-tab="following" role="tab">
+            Following
+            <span class="badge badge-info badge-pill">@Model.FollowingCount</span>
+        </a>
+    </li>
+</ul>
+<div class="tab-content" id="myTabContent">
+    @if (postTabVisible)
+    {
+        <div>
+            @await Component.InvokeAsync("PaginatedPosts", new { 
+                pageIndex = Model.PageIndex,
+                pageSize = Model.PageSize, 
+                userId = Model.ProfileUser.Id 
+            })
+        </div>
+    }
+
+    @if (followersTabVisible)
+    {
+        <div>
+            @await Component.InvokeAsync("PaginatedFollowers", new {
+               pageIndex = Model.PageIndex,
+               pageSize = Model.PageSize,
+               userId = Model.ProfileUser.Id,
+               totalCount = Model.FollowerCount
+            })
+        </div>
+    }
+
+    @if (followingTabVisible)
+    {
+        <div>
+            @await Component.InvokeAsync("PaginatedFollowing", new {
+               pageIndex = Model.PageIndex,
+               pageSize = Model.PageSize,
+               userId = Model.ProfileUser.Id,
+               totalCount = Model.FollowingCount
+            })
+        </div>
+    }
+
+</div>
+
+
+
 
 
 
