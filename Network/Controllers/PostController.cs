@@ -38,6 +38,16 @@ namespace Network.Controllers
             _logger = logger;
         }
 
+        // GET: Post/Create is required since when the user is unauthenticated and tries to add a post, the[authorize] redirects user to
+        // https://localhost:5001/Identity/Account/Login?ReturnUrl=%2FPost%2FCreate
+        // When the user has logged in, we then redirect to /Post/Create.Since the post is a partial form we redirect to the Index page
+        [HttpGet]
+        [Route("Post/Create")]
+        public IActionResult Get()
+        {
+            return RedirectToPage("/Index");
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Content")] Post model)
