@@ -15,8 +15,9 @@ using System.Threading.Tasks;
 namespace Network.Controllers
 {
 
-    // We need to have an MVC controller since when we display the new post form its a partial view. When making a HTTP POST to the razor page we need to have come from 
-    // a razor page. https://stackoverflow.com/questions/49868791/post-partial-view-form 
+    // We need to have an MVC controller since when we display the new post form its a partial view. When making a HTTP POST to the razor page (User wants to create a new post)
+    // we need to have come from a razor page so we cant use razor pages for the post action. However a MVC controller can handle this situation. 
+    // https://stackoverflow.com/questions/49868791/post-partial-view-form 
 
     [Authorize]
     public class PostController : Controller
