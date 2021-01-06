@@ -23,7 +23,8 @@
                 </div>
             }
         </div>
-        <p class="card-subtitle text-muted">@Model.UpdatedOn</p>
+        @{ var iso8601Date = Model.UpdatedOn.ToString("o", System.Globalization.CultureInfo.InvariantCulture); }
+        <time class="timeago card-subtitle text-muted" datetime="@iso8601Date">@iso8601Date</time>
 
         <div class="truncate-text-container">
             <p class="truncate-text card-text">@Model.Content</p>

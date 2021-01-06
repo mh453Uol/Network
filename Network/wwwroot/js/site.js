@@ -27,7 +27,7 @@ var profileController = function (userService) {
     function initialize() {
         const followButton = document.querySelector(".js-follow-button");
 
-        followButton.addEventListener("click", (e) => {
+        followButton && followButton.addEventListener("click", (e) => {
             const hasFollowedUser = e.target.dataset.following == "True";
             const profileUserId = e.target.dataset.userId;
 
@@ -169,7 +169,8 @@ var postController = function (postService) {
 }(postService);
 
 
-document.addEventListener("DOMContentLoaded", function () {
+jQuery(document).ready(function () {
     postController.initialize();
     profileController.initialize();
+    jQuery('time.timeago').timeago();
 })
