@@ -23,29 +23,29 @@ namespace Network.ViewComponents
         public IQueryable<Post> GetAllPosts(Guid? userId)
         {
 
-            var predicate = PredicateBuilder.New<Post>(true);
+            var predicate = PredicateBuilder.New<Post>(p => p.IsDeleted == false);
 
             if (userId.HasValue)
             {
-                predicate.And(p => p.UserId == userId);
+                predicate.And(p => p.CreatedById == userId);
             }
 
             return _dbContext.Posts.AsNoTracking()
                     .Where(predicate)
                     .OrderByDescending(p => p.CreatedOn)
-                    .Include(p => p.UpdatedByUser)
+                    .Include(p => p.UpdatedBy)
                     .Include(p => p.Likes)
                     .Select(p => new Post
                     {
                         Id = p.Id,
                         Content = p.Content,
                         UpdatedOn = p.UpdatedOn,
-                        UserId = p.UserId,
-                        User = new ApplicationUser
+                        CreatedById = p.CreatedById,
+                        CreatedBy = new ApplicationUser
                         {
-                            Id = p.User.Id,
-                            Firstname = p.User.Firstname,
-                            Surname = p.User.Surname
+                            Id = p.CreatedBy.Id,
+                            Firstname = p.CreatedBy.Firstname,
+                            Surname = p.CreatedBy.Surname
                         },
                         // Have to do .ToList().ToHashSet() rather than ToHashSet() due to this issue - https://github.com/dotnet/efcore/issues/20101
                         LikeSet = p.Likes.Where(l => l.IsDeleted == false).Select(l => l.CreatedByUserId).ToList().ToHashSet()

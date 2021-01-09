@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Network.Core;
 using Network.Data;
+using Network.Util;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -54,13 +55,13 @@ namespace Network.Controllers
         {
             if (ModelState.IsValid)
             {
-                var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                var userId = User.GetUserId().Value;
 
                 await _dbContext.Posts.AddAsync(new Post()
                 {
                     Content = model.Content,
-                    UserId = userId,
-                    UpdatedByUserId = userId,
+                    CreatedById = userId,
+                    UpdatedById = userId,
                     CreatedOn = DateTime.Now,
                     UpdatedOn = DateTime.Now
                 });

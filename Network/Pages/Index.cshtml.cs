@@ -21,7 +21,6 @@ namespace Network.Pages
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly NetworkDbContext _dbContext;
-        private readonly IFlashMessage _flashMessage;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<IndexModel> _logger;
 

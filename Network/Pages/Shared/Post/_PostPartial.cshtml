@@ -8,9 +8,9 @@
     <div class="card-body">
         <div class="d-flex justify-content-between align-self-center">
             <h5>
-                <a asp-page="Profile" asp-route-id="@Model.User.Id">@Model.User.FullName</a>
+                <a asp-page="Profile" asp-route-id="@Model.CreatedBy.Id">@Model.CreatedBy.FullName</a>
             </h5>
-            @if (userId == Model.UserId)
+            @if (userId == Model.CreatedById)
             {
                 <div class="btn-group">
                     <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -18,7 +18,7 @@
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
                         <a class="dropdown-item" asp-page="Posts/Edit" asp-route-id="@Model.Id">Edit</a>
-                        <a class="dropdown-item">Delete</a>
+                        <a class="dropdown-item" asp-page="Posts/Delete" asp-route-id="@Model.Id">Delete</a>
                     </div>
                 </div>
             }

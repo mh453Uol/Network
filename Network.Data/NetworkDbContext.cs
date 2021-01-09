@@ -24,9 +24,9 @@ namespace Network.Data
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Post>()
-                .HasOne(p => p.User)
+                .HasOne(p => p.CreatedBy)
                 .WithMany(u => u.Posts)
-                .HasForeignKey(p => p.UserId);
+                .HasForeignKey(p => p.CreatedById);
 
             modelBuilder.Entity<UserFollow>().HasKey(f => new { f.FolloweeId, f.FollowerId });
 

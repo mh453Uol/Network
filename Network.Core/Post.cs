@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Network.Core
 {
-    public class Post
+    public class Post: IAudit
     {
         public Guid Id { get; set; }
 
@@ -16,22 +16,15 @@ namespace Network.Core
 
         public ICollection<Like> Likes { get; set; }
 
-        public Guid UserId { get; set; }
-
-        [ForeignKey("UserId")]
-        public ApplicationUser User { get; set; }
-
-        public Guid UpdatedByUserId { get; set; }
-
-        [ForeignKey("UpdatedByUserId")]
-        public ApplicationUser UpdatedByUser { get; set; }
-
-        [Required]
-        public DateTime CreatedOn { get; set; }
-        public DateTime UpdatedOn { get; set; }
-
         [NotMapped]
         public HashSet<Guid> LikeSet { get; set; }
 
+        public ApplicationUser CreatedBy { get; set; }
+        public Guid CreatedById { get; set; }
+        public ApplicationUser UpdatedBy { get; set; }
+        public Guid UpdatedById { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }
