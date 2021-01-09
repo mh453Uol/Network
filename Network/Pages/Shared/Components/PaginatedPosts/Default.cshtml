@@ -5,4 +5,8 @@
     <partial name="Post/_PostPartial" model="post" />
 }
 
-<partial name="Paginated/_Footer" model="new PaginatedFooter(Model.PageIndex, Model.TotalPages, Model.AdditionalQueryStrings)" />
+@if (Model.Count > 0)
+{
+    <partial name="Paginated/_Footer" model="new PaginatedFooter(Model.PageIndex, Model.TotalPages, Model.AdditionalQueryStrings)" />
+
+}

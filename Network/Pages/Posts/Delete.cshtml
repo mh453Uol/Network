@@ -1,4 +1,12 @@
-﻿@page
+﻿@page "{id:guid}"
 @model Network.Pages.Posts.DeleteModel
 @{
 }
+
+<h2>Are you sure you want to delete the post ?</h2>
+
+<form asp-page="Delete" method="post"> 
+    <button type="submit" class="btn btn-danger btn-block">Delete</button> 
+</form>
+
+<partial name="Post/_PostPartial" model="@Model.Post" />

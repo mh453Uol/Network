@@ -40,17 +40,28 @@ namespace Network.Pages.Posts
 
         public async Task<IActionResult> OnGetAsync(Guid id)
         {
-            var userId = User.GetUserId();
+            var userId = User.GetUserId().Value;
 
             Post = await _dbContext.Posts.AsNoTracking()
-            .Select(p => new Post()
-            {
-                Id = p.Id,
-                Content = p.Content,
-                UpdatedOn = p.UpdatedOn,
-                CreatedById = p.CreatedById,
-            })
-            .FirstOrDefaultAsync(p => p.Id == id && p.CreatedById == userId && p.IsDeleted == false);
+                    .Where(p => p.CreatedById == userId && p.Id == id && p.IsDeleted == false)
+                    .Include(p => p.CreatedBy)
+                    .Include(p => p.Likes)
+                    .Select(p => new Post
+                    {
+                        Id = p.Id,
+                        Content = p.Content,
+                        UpdatedOn = p.UpdatedOn,
+                        CreatedById = p.CreatedById,
+                        CreatedBy = new ApplicationUser
+                        {
+                            Id = p.CreatedBy.Id,
+                            Firstname = p.CreatedBy.Firstname,
+                            Surname = p.CreatedBy.Surname
+                        },
+                        // Have to do .ToList().ToHashSet() rather than ToHashSet() due to this issue - https://github.com/dotnet/efcore/issues/20101
+                        LikeSet = p.Likes.Where(l => l.IsDeleted == false).Select(l => l.CreatedByUserId).ToList().ToHashSet()
+                    }).FirstAsync();
+
 
             if (Post == null)
             {
@@ -59,6 +70,29 @@ namespace Network.Pages.Posts
             }
 
             return Page();
+        }
+
+        public async Task<IActionResult> OnPostAsync(Guid id)
+        {
+            var userId = User.GetUserId().Value;
+
+            var exists = await _dbContext.Posts.AsNoTracking().AnyAsync(p => p.CreatedById == userId && p.Id == id && p.IsDeleted == false);
+
+            if (!exists)
+            {
+                _flashMessage.Warning($"Could not find the post with id {id}");
+                return RedirectToPage("/Index");
+            }
+
+            var post = _dbContext.Posts.Attach(new Post() { Id = id });
+
+            post.Entity.IsDeleted = true;
+
+            _dbContext.Entry<Post>(post.Entity).Property(ee => ee.IsDeleted).IsModified = true;
+
+            await _dbContext.SaveChangesAsync();
+
+            return RedirectToPage("/Profile", new { id = userId, Tab = "posts" });
         }
 
     }
