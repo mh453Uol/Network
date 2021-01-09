@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Network.Core;
 using Network.Data;
+using Vereyon.Web;
 
 namespace Network.Pages.Posts
 {
@@ -19,6 +20,7 @@ namespace Network.Pages.Posts
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly NetworkDbContext _dbContext;
+        private readonly IFlashMessage _flashMessage;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<EditModel> _logger;
 
@@ -27,10 +29,12 @@ namespace Network.Pages.Posts
         public EditModel(SignInManager<ApplicationUser> signInManager,
             ILogger<EditModel> logger,
             UserManager<ApplicationUser> userManager,
-            NetworkDbContext dbContext)
+            NetworkDbContext dbContext,
+            IFlashMessage flashMessage)
         {
             _userManager = userManager;
             _dbContext = dbContext;
+            _flashMessage = flashMessage;
             _signInManager = signInManager;
             _logger = logger;
 
@@ -52,7 +56,7 @@ namespace Network.Pages.Posts
 
             if (Post == null)
             {
-                ViewData["Message"] = $"Could not find the post with id {id}";
+                _flashMessage.Warning($"Could not find the post with id {id}");
                 return RedirectToPage("/Index");
             }
 
@@ -69,7 +73,7 @@ namespace Network.Pages.Posts
 
                 if(!exists)
                 {
-                    ViewData["Message"] = $"Could not edit the post with id {id}";
+                    _flashMessage.Warning($"Could not edit the post with id {id}");
                     return RedirectToPage("/Index");
                 }
 
