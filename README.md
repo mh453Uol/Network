@@ -8,6 +8,11 @@ Here is a video demoing the different features - https://vimeo.com/498706108
 
 # Development
 
+## Set up
+1. Go to ./Network/Network folder and run `dotnet restore` (Install dependencies)
+2. Go to ./Network/Network.Data/ folder and run ```dotnet ef database update -s ..\Network\``` (We use Sqlite as a database)
+3. Go to ./Network/Network folder and run dotnet watch run (Run web app in watch mode)
+
 ## Create Migrations
 Navigate to ./Network.Data/ folder run ```dotnet ef migrations add add-likes -s ..\Network\``` -s flag mark the startup path
 
